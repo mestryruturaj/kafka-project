@@ -68,4 +68,37 @@ public class EbKafkaProducer {
         kafkaProducer.flush();
         kafkaProducer.close();
     }
+
+
+    public void produceWithKey() {
+        logger.info("Produce with key and value");
+
+        Properties properties = new Properties();
+        properties.setProperty("bootstrap.servers", "localhost:9092");
+        properties.setProperty("key.serializer", StringSerializer.class.getName());
+        properties.setProperty("value.serializer", StringSerializer.class.getName());
+
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
+
+        String topic = "kafka_project";
+
+        for (int i = 0; i < 30; i++) {
+            String key = "key" + (i % 7);
+            String value = "Hello world, waving at you for the " + i + "th time!";
+
+            ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topic, key, value);
+
+            kafkaProducer.send(producerRecord, new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    if (exception == null) {
+                        logger.info(String.format("Topic = %s, \tPartition = %d, \tOffset = %d, \tTimestamp = %d", metadata.topic(), metadata.partition(), metadata.offset(), metadata.timestamp()));
+                    }
+                }
+            });
+        }
+
+        kafkaProducer.flush();
+        kafkaProducer.close();
+    }
 }
