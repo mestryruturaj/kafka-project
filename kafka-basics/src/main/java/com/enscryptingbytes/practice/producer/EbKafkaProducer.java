@@ -31,4 +31,41 @@ public class EbKafkaProducer {
 
         kafkaProducer.close();
     }
+
+    public void produceWithCallback() {
+        logger.info("Producer with callback function.");
+
+        Properties properties = new Properties();
+        properties.setProperty("bootstrap.servers", "localhost:9092");
+        properties.setProperty("key.serializer", StringSerializer.class.getName());
+        properties.setProperty("value.serializer", StringSerializer.class.getName());
+
+        //only for demonstration, not recommended for production
+//        properties.setProperty("partitioner.class", RoundRobinPartitioner.class.getName());
+//        properties.setProperty("batch.size", "400");
+
+        KafkaProducer<String, String> kafkaProducer = new KafkaProducer<>(properties);
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                ProducerRecord<String, String> producerRecord = new ProducerRecord<>("kafka_project", "I'm waving for the " + j + "th time now");
+                kafkaProducer.send(producerRecord, new Callback() {
+                    @Override
+                    public void onCompletion(RecordMetadata metadata, Exception exception) {
+                        if (exception == null) {
+                            logger.info(String.format("Topic = %s, \tPartition = %d, \tOffset = %d, \tTimestamp = %d", metadata.topic(), metadata.partition(), metadata.offset(), metadata.timestamp()));
+                        }
+                    }
+                });
+            }
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        kafkaProducer.flush();
+        kafkaProducer.close();
+    }
 }
