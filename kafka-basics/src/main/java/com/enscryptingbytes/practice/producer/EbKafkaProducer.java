@@ -13,6 +13,14 @@ import java.util.Properties;
 public class EbKafkaProducer {
     private static Logger logger = LoggerFactory.getLogger(EbKafkaProducer.class.getSimpleName());
 
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+
+        EbKafkaProducer kafkaProducer = new EbKafkaProducer();
+
+        kafkaProducer.produceWithKey();
+    }
+
     public void produce() {
         logger.info("Producer without callback function.");
         Properties properties = new Properties();
