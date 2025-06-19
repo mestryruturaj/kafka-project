@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 public class EbKafkaProducer {
-    private static Logger logger = LoggerFactory.getLogger(EbKafkaProducer.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(EbKafkaProducer.class.getSimpleName());
 
     public static void main(String[] args) {
         System.out.println("Hello, World!");
